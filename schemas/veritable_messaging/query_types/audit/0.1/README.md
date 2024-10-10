@@ -79,8 +79,8 @@ The `body` of an audit query request is constructed as follows:
 The OEM receives the message, retrieves the query response message with `id`
 `dbbab830-d2f9-4b6c-8168-98250e5c09b7` and looks up the identity of the
 Veritable node that sent the message with `id`
-`81660576-653f-433a-9eae-c42a5164575e`.  Recall in [Veritable
-messaging](../../../0.1/README.md#state)) that it was required that nodes
+`81660576-653f-433a-9eae-c42a5164575e`.  In this case, it was Bob.  Recall in [Veritable
+messaging](../../../0.1/README.md#state) that it was required that nodes
 maintain state to record which Veritable nodes were associated with which `id`s.
 
 It then sends a partial query to that node:
@@ -102,21 +102,23 @@ It then sends a partial query to that node:
 ```
 
 The receiving node does the same processing to obtain the ID of the node that
-sent the message `8825b9f9-f136-4ca6-aab0-62a50d128d33`, and then sends this ID
-to the auditor.
+sent the message `8825b9f9-f136-4ca6-aab0-62a50d128d33`, say, Charlie.  It then
+sends this ID to the auditor, since it is the parent node of the node that sent
+the message being targeted by the audit.
 
 ### Resolving the dispute
-At this point the auditor has a connection to a node they believe to be
-cheating.  The auditor now establishes a direct connection to this Veritable
-node and resolves the dispute.
+At this point the auditor can establish a connection to a node they believe to
+be cheating.  The auditor and node in question can now communicate over DIDComm
+to resolve the dispute.
 
 This resolution could be 'technical', e.g. by requesting the same information as
 was requested in the original query and comparing it, or non-technical, like
-requesting an out-of-band conversation about the discrepancy.  The resolution
-process is out of scope.
+requesting an out-of-band conversation about the discrepancy, and investigating
+database content manually.  The resolution process is out of scope of Veritable.
 
-If for some reason this node is unwilling to divulge its child node's identity,
-then the auditor will 'blame' the parent node.
+If for some reason the parent node is unwilling to divulge its child node's
+identity, then the auditor will 'blame' the parent node and must resolve the
+dispute with the auditor.
 
 If the identity of the child node is revealed and the auditor successfully
 establishes a connection, then further queries can be initiated rooted at that
@@ -126,19 +128,21 @@ or just invalid).
 ## State
 Note that the 'top-level' querier (i.e. the node that submits a query request
 that does not have a parent query) should store query responses for audit
-purposes, but 'intermediate' nodes do not need to store messages since the tree
-of responses is provided in the top-level query response.
+purposes (since they contain the paths of message `id`s), but 'intermediate'
+nodes do not need to store messages since the tree of responses is provided in
+the top-level query response.
 
 Intermediate nodes do, however, need to maintain state to match message `id`
 values to Veritable node IDs so they can forward partial audit query requests
-and/or identify nodes that gave particular responses for the auditor.  This was
-discussed in [Veritable messaging](../../../0.1/README.md#state)
+and/or identify nodes that gave particular responses for the auditor.  This
+requirement was discussed in [Veritable
+messaging](../../../0.1/README.md#state).
 
 ## Dealing with malicious behaviour
 
 ### Repudiating messages
 There is no application-layer authentication on Veritable messages (see
-[Messaging](../../../0.1/README.md#future-work)) so any information query
+[Future work](../../../0.1/README.md#future-work)) so any information in query
 responses can be changed by malicious nodes.
 
 If a node changes values its children provided in partial query responses when
@@ -149,8 +153,8 @@ parent since messages are repudiable.
 
 However, falsely accusing a parent may mean they are removed as a supplier, so
 they are incentivised to be honest.  Additionally, a parent node found to be
-using a supplier node that provides false information may be considered liable
-for false information by the auditor, and may therefore be dropped as a supplier
+using a supplier node that provides false information may be receive punitive
+action administered by the auditor, and may therefore be dropped as a supplier
 by its own suppliers, incentivising nodes not to change partial query responses.
 
 ### Loss of node ID / query ID database
@@ -171,9 +175,10 @@ If the parent node of the node that provided information being audited loses
 state, this node is treated as malicious since its supplier provided false
 information and cannot be identified. 
 
-Note that the resolution process in this situation is equivalent to the
-resolution required for nodes who might choose to change identifiers (rather
-than values as in the previous section) in partial query responses.
+Note that the dispute resolution process in this situation is equivalent to the
+resolution required for nodes who might choose to change `id`s in message
+responses to obfuscate query responses (rather than values of responses as was
+the focus in the previous subsection), and there is no clear value in doing so.
 
 ## Future work
 ### State recovery
