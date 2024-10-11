@@ -12,9 +12,8 @@ This solution has features such as:
 This repo includes READMEs that explain concepts within Veritable:
 * [Architecture](docs/architecture.md)
 
-It also contains the 
-
-Finally, it also provides the schemas for Veritable messages:
+It also provides details of the Veritable messaging protocol and schemas for
+Veritable messages:
 * [Veritable messaging protocol](schemas/veritable_messaging/0.1/README.md)
 * [Veritable query types]
   * [ISO 9001](schemas/veritable_messaging/query_types/iso_9001/0.1/README.md)
