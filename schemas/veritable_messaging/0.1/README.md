@@ -171,7 +171,7 @@ that must be decomposed into a large number of partial queries.
 The `expiresTime` field in the DRPC response should generally not be later than
 the `expiresTime` field in the corresponding DRPC request, since this implies
 the query might only be answerable after it expires.  If this is the case, the
-responder must provide an `returnCode` of `1`, and `expiresTime` should be used
+responder must provide an `returnCode` of `1` in the acknowledgement, and `expiresTime` should be used
 by the querier to decide on whether to call `submit_query_request` again with a
 new `expiresTime` value or not to repeat the query.  Return codes are defined in
 the [Query acknowledgement](../query_ack/0.1/README.md) documentation.
