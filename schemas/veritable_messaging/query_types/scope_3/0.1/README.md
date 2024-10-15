@@ -23,6 +23,12 @@ The schema for the `data` field of a scope 3 emissions query request is as follo
 }
 ```
 
+The `subjectId` field can be populated however is useful for
+identifying the subject in a way that nodes will understand how to
+find information on the product in their internal databases.  It is
+possible that this is only meaningful between the immediate querier
+and responder: e.g. an invoice reference number.
+
 ## Query response
 ### Schema
 The schema for the `data` field of a Scope 3 Emissions query response is as follows:
