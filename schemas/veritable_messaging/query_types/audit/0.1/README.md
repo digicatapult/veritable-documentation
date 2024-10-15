@@ -24,44 +24,13 @@ Audit messages in Veritable are just queries of a specific type.  The responses
 of these queries may necessitate further investigation by the auditor but this
 is out of scope once the parties have been identified.
 
-## Audit process
-
-### Initiating the audit
-An audit is initiated when information discovered out of band determines that
-information received in a query response is incorrect.
-
-For example, suppose a component is reported in Veritable to be able
-to support a particular shear stress tolerance but is found to break
-during routine testing of a vehicle that integrates that component.
-
-The OEM looks up the Veritable query response that contains information
-pertaining to the stress tolerance and initiates the audit.  The OEM must
-have stored the query response to do this, e.g. 
-alongside the invoice/procurement forms.
-
-The OEM may itself audit query responses.  The remainder of this document
-assumes the OEM is the auditor.  If this is not the case, the auditor either
-needs to control its own Veritable node, or will require (e.g.) an OEM to submit
-audit queries on its behalf.
-
-Suppose the ISO 9001 response from the [ISO 9001 message type
-documentation](../../iso_9001/0.1/README.md) is being audited as it turns out
-that subject with ID `7CA09D81` was not actually certified.  The audit uses the
-top-level response message to look up the `id` for the message containing
-information for `7CA09D81` and determines the path of `id`s from the top-level
-to this partial query response.  This is determined to be:
-
-- `dbbab830-d2f9-4b6c-8168-98250e5c09b7`
-  - `81660576-653f-433a-9eae-c42a5164575e`
-    - `8825b9f9-f136-4ca6-aab0-62a50d128d33`
-
 ## Query request
 
 ### Schema
 The schema for the `data` field of an audit query request is as follows:
 ```json
 {
-  "$id": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/iso_9001/response/0.1",
+  "$id": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/audit/response/0.1",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "description": "The Veritable query response schema for ISO 9001 compliance",
   "type": "object",
@@ -98,6 +67,78 @@ An audit query request for a subject with ID `39C6F7EF` is as follows:
   }
 }
 ```
+
+## Query response
+### Schema
+The schema for the `data` field of an audit query response is as follows:
+```json
+{
+  "$id": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/audit/response/0.1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "The Veritable query response schema for ISO 9001 compliance",
+  "type": "object",
+  "properties": {
+    "nodeId": {
+      "type": "string"
+    },
+  },
+  "required": [ "nodeId" ]
+}
+```
+
+The `nodeId` field is populated in such a way that an auditor can establish a
+connection with the node.  For example, this could be a DID, or a company name,
+number and address.  The details are not specified in the first iteration of
+Veritable.
+
+### Example
+An audit query response reporting a node with ID
+`did:web:example:com:well_known` is as follows:
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "submit_query_request",
+  "params": {
+    "id": "dbbab830-d2f9-4b6c-8168-98250e5c09b7",
+    "type": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/audit/response/0.1",
+    "createdTime": 1704067200,
+    "data": {
+      "nodeId": "did:web:example:com:well_known"
+    }
+  }
+}
+```
+
+## Audit process
+
+### Initiating the audit
+An audit is initiated when information discovered out of band determines that
+information received in a query response is incorrect.
+
+For example, suppose a component is reported in Veritable to be able
+to support a particular shear stress tolerance but is found to break
+during routine testing of a vehicle that integrates that component.
+
+The OEM looks up the Veritable query response that contains information
+pertaining to the stress tolerance and initiates the audit.  The OEM must
+have stored the query response to do this, e.g. 
+alongside the invoice/procurement forms.
+
+The OEM may itself audit query responses.  The remainder of this document
+assumes the OEM is the auditor.  If this is not the case, the auditor either
+needs to control its own Veritable node, or will require (e.g.) an OEM to submit
+audit queries on its behalf.
+
+Suppose the ISO 9001 response from the [ISO 9001 message type
+documentation](../../iso_9001/0.1/README.md) is being audited as it turns out
+that subject with ID `7CA09D81` was not actually certified.  The audit uses the
+top-level response message to look up the `id` for the message containing
+information for `7CA09D81` and determines the path of `id`s from the top-level
+to this partial query response.  This is determined to be:
+
+- `dbbab830-d2f9-4b6c-8168-98250e5c09b7`
+  - `81660576-653f-433a-9eae-c42a5164575e`
+    - `8825b9f9-f136-4ca6-aab0-62a50d128d33`
 
 ### Processing the query
 The OEM receives the message, retrieves the query response message with `id`
