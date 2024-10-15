@@ -18,7 +18,7 @@ Nevertheless, Veritable query responses are designed to allow auditors to
 identify _some_ party to blame if query responses are found to be incorrect. The
 auditor determines that the blame lies with the identified node or with one of
 its suppliers; it is up to the identified node to take the blame or to provide
-evidence (within Veritable) that one of their suppliers is to blame.
+evidence that one of their suppliers is to blame.
 
 Audit messages in Veritable are just queries of a specific type.  The responses
 of these queries may necessitate further investigation by the auditor but this
@@ -36,7 +36,7 @@ during routine testing of a vehicle that integrates that component.
 
 The OEM looks up the Veritable query response that contains information
 pertaining to the stress tolerance and initiates the audit.  The OEM must
-have stored the query response to do this, e.g. as a text object in a database
+have stored the query response to do this, e.g. 
 alongside the invoice/procurement forms.
 
 The OEM may itself audit query responses.  The remainder of this document
@@ -55,22 +55,46 @@ to this partial query response.  This is determined to be:
   - `81660576-653f-433a-9eae-c42a5164575e`
     - `8825b9f9-f136-4ca6-aab0-62a50d128d33`
 
+## Query request
 
-The `body` of an audit query request is constructed as follows:
+### Schema
+The schema for the `data` field of an audit query request is as follows:
 ```json
 {
-  "id": "7360027c-9752-48c7-ad4c-5fb9becdb194",
-  "type": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/audit/request/0.1",
-  "from": "did:example:alice",
-  "to": [ "did:example:bob" ],
-  "created_time": 1704067200,
-  "expires_time": 1704067260,
-  "body": {
-    "path": [
-      "dbbab830-d2f9-4b6c-8168-98250e5c09b7",
-      "81660576-653f-433a-9eae-c42a5164575e",
-      "8825b9f9-f136-4ca6-aab0-62a50d128d33"
-    ]
+  "$id": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/iso_9001/response/0.1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "The Veritable query response schema for ISO 9001 compliance",
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      }
+    },
+  },
+  "required": [ "path" ]
+}
+```
+
+### Example
+An audit query request for a subject with ID `39C6F7EF` is as follows:
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "submit_query_request",
+  "params": {
+    "id": "dbbab830-d2f9-4b6c-8168-98250e5c09b7",
+    "type": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/audit/request/0.1",
+    "createdTime": 1704067200,
+    "data": {
+      "path": [
+        "dbbab830-d2f9-4b6c-8168-98250e5c09b7",
+        "81660576-653f-433a-9eae-c42a5164575e",
+        "8825b9f9-f136-4ca6-aab0-62a50d128d33",
+      ]
+    }
   }
 }
 ```
@@ -86,17 +110,18 @@ maintain state to record which Veritable nodes were associated with which `id`s.
 It then sends a partial query to that node:
 ```json
 {
-  "id": "256b5adc-effe-4e40-b471-848dd0ee557f",
-  "type": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/audit/request/0.1",
-  "from": "did:example:alice",
-  "to": [ "did:example:bob" ],
-  "created_time": 1704067200,
-  "expires_time": 1704067260,
-  "body": {
-    "path": [
-      "81660576-653f-433a-9eae-c42a5164575e",
-      "8825b9f9-f136-4ca6-aab0-62a50d128d33"
-    ]
+  "jsonrpc": "2.0",
+  "method": "submit_query_request",
+  "params": {
+    "id": "256b5adc-effe-4e40-b471-848dd0ee557f",
+    "type": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/audit/request/0.1",
+    "createdTime": 1704067230,
+    "data": {
+      "path": [
+        "81660576-653f-433a-9eae-c42a5164575e",
+        "8825b9f9-f136-4ca6-aab0-62a50d128d33",
+      ]
+    }
   }
 }
 ```
