@@ -1,6 +1,6 @@
 # Veritable Acknowledgement
 The Veritable acknowledgement message is used to acknowledge receipt of some
-request message, usually a DRPC response message.
+request message, usually a DRPC request message.
 
 
 ## Schema
