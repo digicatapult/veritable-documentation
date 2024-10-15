@@ -82,12 +82,10 @@ message is as follows:
       "type": "string"
     },
     "createdTime": {
-      "type": "string",
-      "format": "date"
+      "type": "number"
     },
     "expiresTime": {
-      "type": "string",
-      "format": "date"
+      "type": "number"
     },
     "data": {
       "type": "object",
