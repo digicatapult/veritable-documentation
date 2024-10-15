@@ -170,7 +170,10 @@ It then sends a partial query to that node:
 The receiving node does the same processing to obtain the ID of the node that
 sent the message `8825b9f9-f136-4ca6-aab0-62a50d128d33`, say, Charlie.  It then
 sends this ID to the auditor, since it is the parent node of the node that sent
-the message being targeted by the audit.
+the message being targeted by the audit.  In other words, the auditor may
+receive a `submit_query_response` DRPC call containing the identity of the node
+believed to have given false information.  Alternatively, the identity can be
+fed up via the same route through which the query request was sent.
 
 ### Resolving the dispute
 At this point the auditor can establish a connection to a node they believe to
