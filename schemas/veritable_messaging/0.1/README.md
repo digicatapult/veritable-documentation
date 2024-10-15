@@ -151,6 +151,7 @@ The DRPC response message is the Veritable `acknowledgement` message:
   "jsonrpc": "2.0",
   "method": "submit_query_request",
   "params": {
+    "id": "dbbab830-d2f9-4b6c-8168-98250e5c09b7",
     "type": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_ack/0.1",
     "createdTime": 1704067200,
     "expiresTime": 1704067260,
@@ -160,9 +161,6 @@ The DRPC response message is the Veritable `acknowledgement` message:
   }
 }
 ```
-
-Note that `id` is not necessary in the response message since the DRPC
-logic matches the DRPC request to the DRPC response.
 
 The optional `expiresTime` field used in the DRPC response message in the
 `submit_query_request` method indicates approximately when the querier should
