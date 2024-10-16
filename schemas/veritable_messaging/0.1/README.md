@@ -122,6 +122,13 @@ The DRPC request message follows the following template:
   }
 }
 ```
+The `id` field is a UUID used to link the query to the response.  The DRPC
+response and the DRPC request and response messages for the corresponding
+`submit_query_response` method call all use the same `id` in this field so that
+the response can be linked to the query.  In future Veritable iterations, the
+query request and response will be linked via DIDComm thread IDs (see [Threaded
+responses](#threaded-responses)).
+
 The `data` field is populated according to the query type (identified by the
 MTURI value in the `type` field).  These data structures are defined in the
 MTURIs listed above.
