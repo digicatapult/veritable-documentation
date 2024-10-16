@@ -46,12 +46,12 @@ Defining the query request and query response as two separate DRPC calls allows
 for an asynchronous message flow.
 
 ## Veritable query message structure
-Veritable currently defines three types of query: ISO 9001, Scope 3 Emissions,
+Veritable currently defines three types of query: ISO 9001, Total Carbon Embodiment,
 and Audit.  The DIDComm Message Type URIs (MTURIs), which are included inside DRPC messages, are as follows:
 - `https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/iso_9001/request/0.1`
 - `https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/iso_9001/response/0.1`
-- `https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/scope_3/request/0.1`
-- `https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/scope_3/response/0.1`
+- `https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/total_carbon_embodiment/request/0.1`
+- `https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/total_carbon_embodiment/response/0.1`
 - `https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/audit/request/0.1`
 - `https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/audit/response/0.1`
 
@@ -92,8 +92,8 @@ message is as follows:
       "oneOf": [
         { "$ref": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/iso_9001/request/0.1" },
         { "$ref": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/iso_9001/response/0.1" },
-        { "$ref": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/scope_3/request/0.1" },
-        { "$ref": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/scope_3/response/0.1" },
+        { "$ref": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/total_carbon_embodiment/request/0.1" },
+        { "$ref": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/total_carbon_embodiment/response/0.1" },
         { "$ref": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/audit/request/0.1" },
         { "$ref": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/audit/response/0.1" },
         { "$ref": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_ack/0.1" }
