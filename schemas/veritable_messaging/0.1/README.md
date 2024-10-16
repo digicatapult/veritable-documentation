@@ -260,7 +260,9 @@ In Veritable's first iteration, each responding node includes _partial query
 responses_ in its own query response message, possibly adding its own data,
 before sending it. Embedding query responses means response aggregation can be
 done by the 'top-level' querier however they find useful, and reduces the
-amount of state each node has to store for audits.
+amount of state each node has to store for audits.  Crucially, the embedding
+process is designed not to leak information about the identity of the node that 
+provided a partial query response.
 
 The `partialResponses` array is an array of objects of the same type as
 `params`.  To construct the array, the `params` field is extracted from partial
