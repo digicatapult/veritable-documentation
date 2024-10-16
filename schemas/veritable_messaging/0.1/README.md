@@ -97,8 +97,7 @@ message is as follows:
         { "$ref": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/audit/request/0.1" },
         { "$ref": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/audit/response/0.1" },
         { "$ref": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_ack/0.1" }
-      ],
-      "required": [ "subjectId" ]
+      ]
     },
     "required": [ "id", "type", "createdTime", "data" ]
   }
