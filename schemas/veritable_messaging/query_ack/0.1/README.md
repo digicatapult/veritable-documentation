@@ -3,6 +3,7 @@ The Veritable acknowledgement message is used to acknowledge receipt of some
 request message, usually a DRPC request message.
 
 ## Schema
+The schema for the `data` field of an acknowledgement Veritable message is as follows:
 ```json
 {
   "$id": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_ack/0.1",
