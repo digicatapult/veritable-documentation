@@ -93,7 +93,7 @@ Veritable.
 
 ### Example
 An audit query response reporting a node with ID
-`did:web:example:com:well_known` is as follows:
+`did:web:example.com` is as follows:
 ```json
 {
   "jsonrpc": "2.0",
@@ -103,7 +103,7 @@ An audit query response reporting a node with ID
     "type": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/audit/response/0.1",
     "createdTime": 1704067200,
     "data": {
-      "nodeId": "did:web:example:com:well_known"
+      "nodeId": "did:web:example.com"
     }
   }
 }
