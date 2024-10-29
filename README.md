@@ -12,6 +12,14 @@ This solution has features such as:
 This repo includes READMEs that explain concepts within Veritable:
 * [Architecture](docs/architecture.md)
 
+It also provides details of the Veritable messaging protocol and schemas for
+Veritable messages:
+* [Veritable messaging protocol](schemas/veritable_messaging/0.1/README.md)
+* [Veritable query types]
+  * [ISO 9001](schemas/veritable_messaging/query_types/iso_9001/0.1/README.md)
+  * [Total Carbon Embodiment](schemas/veritable_messaging/query_types/total_carbon_embodiment/0.1/README.md)
+  * [Audit](schemas/veritable_messaging/query_types/audit/0.1/README.md)
+
 ## Repositories
 ### Active Veritable Repositories
 These repositories contain code being actively maintained as a part of the Veritable project.
