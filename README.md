@@ -28,7 +28,8 @@ These repositories contain code being actively maintained as a part of the Verit
 | --- | --- |
 | [veritable-documentation](https://github.com/digicatapult/veritable-documentation) | Documentation for the Veritable Framework. |
 | [veritable-cloudagent](https://github.com/digicatapult/veritable-cloudagent) | A cloud agent and cloud wallet API for the Veritable framework. |
-| [veritable-portal](https://github.com/digicatapult/veritable-portal) | A web portal for the Veritable framework. |
+| [veritable-ui](https://github.com/digicatapult/veritable-ui) | A web portal for the Veritable framework. |
+| [veritable-flux-infra](https://github.com/digicatapult/veritable-flux-infra) | FluxCD repository for our deployed Veritable infrastructure. |
 
 ### Inactive Veritable Repositories
 These repositories contain code that is no longer being actively maintained as a part of the Veritable project.
