@@ -320,18 +320,108 @@ given point in time.  The challenge is to do this without compromising the
 node's privacy. 
 
 We now describe one possible mechanism using `did:key`, which may be implemented
-in future Veritable iterations.
+in future Veritable iterations.  Below, we assume ECDSA with curve P256 and
+SHA256 is used.
 
+#### Methodology
 For each query response, the responding node generates a single-use `did:key`
-DID and signs the query response body. The signatures are included in the query
-response of parents (at the same level as the `data` field).  The `id` field in
-the objects inside the `partialQueries` array is no longer populated as a UUID,
-but as the `did:key` identifier, e.g.
-`did:key:DRFlgWZAAG5SVQ8dWSjuS8y-Pz3bqgc0_QmrGqcg9SI`.
+DID and signs the query response body.  When a node constructs its response, it
+creates its response object in the usual way, modifies it as described below,
+and then signs the resulting data object.
 
+It is suggested that the [JOSE framework](https://jose.readthedocs.io) should be
+used to add signatures as it is a well-established and robust framework and
+simplifies the route to using JSON Web Encryption in the future, which may be
+desirable.  Encryption could be used to conceal intermediate query responses
+from all but the original querier.
+
+#### Signing process
+JSON Web Signatures comprise a header, the payload, and the signature, base64url
+encoded and concatenated with '`.`'.  The payload is represented using base64url
+because this avoids the problem that fields in JSON objects may be written and
+parsed in any order, which could cause signature verification to fail.
+
+The process for generating signatures for Veritable messages is as follows:
+
+1. Construct the `params` field as for a 'normal' response.
+```json
+{
+  "id": "03f3e4e7-47b6-4bf6-9076-ad4cc361b52c",
+  "createdTime": 1730994619,
+  "expiresTime": 1731599419,
+  "type": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/total_carbon_embodiment/request/0.1",
+  "data": {
+    "subjectId": {
+      "idType": "product_and_quantity",
+      "content": {
+        "productId": "Test1",
+        "quantity": 1
+      }
+    }
+  }
+}
+```
+2. Generate a new `did:key`.
+```
+did:key:z2dmzD81cgPx8Vki7JbuuMmFYrWPgYoytykUZ3eyqht1j9KbsnU4EL71rner8MnzLDPXnFuUoEBS7YERXEwX5enQ1WyEoNnARK6EmFVPbZhpTYj1BJX93cc1vTyUdqJYU948cdtJM4u2CMJXYiWM4c7M1UMKZ7k31ZiUxNyDmzDdQFuVmv
+```
+3. Add the field `did` to the `params` structure and populate it with
+   `did:key` identifier as a string
+```json
+{
+  "id": "03f3e4e7-47b6-4bf6-9076-ad4cc361b52c",
+  "createdTime": 1730994619,
+  "expiresTime": 1731599419,
+  "type": "https://github.com/digicatapult/veritable-documentation/tree/main/schemas/veritable_messaging/query_types/total_carbon_embodiment/request/0.1",
+  "data": {
+    "subjectId": {
+      "idType": "product_and_quantity",
+      "content": {
+        "productId": "Test1",
+        "quantity": 1
+      }
+    }
+  },
+  "did": "did:key:z2dmzD81cgPx8Vki7JbuuMmFYrWPgYoytykUZ3eyqht1j9KbsnU4EL71rner8MnzLDPXnFuUoEBS7YERXEwX5enQ1WyEoNnARK6EmFVPbZhpTYj1BJX93cc1vTyUdqJYU948cdtJM4u2CMJXYiWM4c7M1UMKZ7k31ZiUxNyDmzDdQFuVmv"
+}
+```
+and then encode this object using UTF-8 and base64url:
+```base64
+ewogICJpZCI6ICIwM2YzZTRlNy00N2I2LTRiZjYtOTA3Ni1hZDRjYzM2MWI1MmMiLAogICJjcmVhdGVkVGltZSI6IDE3MzA5OTQ2MTksCiAgImV4cGlyZXNUaW1lIjogMTczMTU5OTQxOSwKICAidHlwZSI6ICJodHRwczovL2dpdGh1Yi5jb20vZGlnaWNhdGFwdWx0L3Zlcml0YWJsZS1kb2N1bWVudGF0aW9uL3RyZWUvbWFpbi9zY2hlbWFzL3Zlcml0YWJsZV9tZXNzYWdpbmcvcXVlcnlfdHlwZXMvdG90YWxfY2FyYm9uX2VtYm9kaW1lbnQvcmVxdWVzdC8wLjEiLAogICJkYXRhIjogewogICAgInN1YmplY3RJZCI6IHsKICAgICAgImlkVHlwZSI6ICJwcm9kdWN0X2FuZF9xdWFudGl0eSIsCiAgICAgICJjb250ZW50IjogewogICAgICAgICJwcm9kdWN0SWQiOiAiVGVzdDEiLAogICAgICAgICJxdWFudGl0eSI6IDEKICAgICAgfQogICAgfQogIH0sCiAgImRpZCI6ICJkaWQ6a2V5OnoyZG16RDgxY2dQeDhWa2k3SmJ1dU1tRllyV1BnWW95dHlrVVozZXlxaHQxajlLYnNuVTRFTDcxcm5lcjhNbnpMRFBYbkZ1VW9FQlM3WUVSWEV3WDVlblExV3lFb05uQVJLNkVtRlZQYlpocFRZajFCSlg5M2NjMXZUeVVkcUpZVTk0OGNkdEpNNHUyQ01KWFlpV000YzdNMVVNS1o3azMxWmlVeE55RG16RGRRRnVWbXYiCn0
+```
+4. Create the JWS Protected Header object
+```json
+{"typ":"JWT", "alg":"ES256"}
+```
+and encode it using UTF-8 and base64url:
+```
+eyJ0eXAiOiJKV1QiLCAiYWxnIjoiRVMyNTYifQo
+```
+5. Sign the Protected Header concatenated with the
+   payload by '`.`' (i.e. `0x2E`) as a string of ASCII characters, i.e. the following:
+```
+eyJ0eXAiOiJKV1QiLCAiYWxnIjoiRVMyNTYifQo.ewogICJpZCI6ICIwM2YzZTRlNy00N2I2LTRiZjYtOTA3Ni1hZDRjYzM2MWI1MmMiLAogICJjcmVhdGVkVGltZSI6IDE3MzA5OTQ2MTksCiAgImV4cGlyZXNUaW1lIjogMTczMTU5OTQxOSwKICAidHlwZSI6ICJodHRwczovL2dpdGh1Yi5jb20vZGlnaWNhdGFwdWx0L3Zlcml0YWJsZS1kb2N1bWVudGF0aW9uL3RyZWUvbWFpbi9zY2hlbWFzL3Zlcml0YWJsZV9tZXNzYWdpbmcvcXVlcnlfdHlwZXMvdG90YWxfY2FyYm9uX2VtYm9kaW1lbnQvcmVxdWVzdC8wLjEiLAogICJkYXRhIjogewogICAgInN1YmplY3RJZCI6IHsKICAgICAgImlkVHlwZSI6ICJwcm9kdWN0X2FuZF9xdWFudGl0eSIsCiAgICAgICJjb250ZW50IjogewogICAgICAgICJwcm9kdWN0SWQiOiAiVGVzdDEiLAogICAgICAgICJxdWFudGl0eSI6IDEKICAgICAgfQogICAgfQogIH0sCiAgImRpZCI6ICJkaWQ6a2V5OnoyZG16RDgxY2dQeDhWa2k3SmJ1dU1tRllyV1BnWW95dHlrVVozZXlxaHQxajlLYnNuVTRFTDcxcm5lcjhNbnpMRFBYbkZ1VW9FQlM3WUVSWEV3WDVlblExV3lFb05uQVJLNkVtRlZQYlpocFRZajFCSlg5M2NjMXZUeVVkcUpZVTk0OGNkdEpNNHUyQ01KWFlpV000YzdNMVVNS1o3azMxWmlVeE55RG16RGRRRnVWbXYiCn0
+```
+6. The resulting signature is then encoded using base64url:
+```
+AehxPcfvrnmF_FdJj05_Yum11toS_O1KolXAGc2l08T-KpTBL-A-LuuvMzNw-bGfyr2uvaQr7NbFxvTWlef5xQ
+```
+7. The header/payload string is concatenated with the signature, separated using '`.`', to produce the JWS, and this is placed in the message as follows:
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "submit_query_response",
+  "params": {
+    "signedResponse": "eyJ0eXAiOiJKV1QiLCAiYWxnIjoiRVMyNTYifQo.ewogICJpZCI6ICIwM2YzZTRlNy00N2I2LTRiZjYtOTA3Ni1hZDRjYzM2MWI1MmMiLAogICJjcmVhdGVkVGltZSI6IDE3MzA5OTQ2MTksCiAgImV4cGlyZXNUaW1lIjogMTczMTU5OTQxOSwKICAidHlwZSI6ICJodHRwczovL2dpdGh1Yi5jb20vZGlnaWNhdGFwdWx0L3Zlcml0YWJsZS1kb2N1bWVudGF0aW9uL3RyZWUvbWFpbi9zY2hlbWFzL3Zlcml0YWJsZV9tZXNzYWdpbmcvcXVlcnlfdHlwZXMvdG90YWxfY2FyYm9uX2VtYm9kaW1lbnQvcmVxdWVzdC8wLjEiLAogICJkYXRhIjogewogICAgInN1YmplY3RJZCI6IHsKICAgICAgImlkVHlwZSI6ICJwcm9kdWN0X2FuZF9xdWFudGl0eSIsCiAgICAgICJjb250ZW50IjogewogICAgICAgICJwcm9kdWN0SWQiOiAiVGVzdDEiLAogICAgICAgICJxdWFudGl0eSI6IDEKICAgICAgfQogICAgfQogIH0sCiAgImRpZCI6ICJkaWQ6a2V5OnoyZG16RDgxY2dQeDhWa2k3SmJ1dU1tRllyV1BnWW95dHlrVVozZXlxaHQxajlLYnNuVTRFTDcxcm5lcjhNbnpMRFBYbkZ1VW9FQlM3WUVSWEV3WDVlblExV3lFb05uQVJLNkVtRlZQYlpocFRZajFCSlg5M2NjMXZUeVVkcUpZVTk0OGNkdEpNNHUyQ01KWFlpV000YzdNMVVNS1o3azMxWmlVeE55RG16RGRRRnVWbXYiCn0.AehxPcfvrnmF_FdJj05_Yum11toS_O1KolXAGc2l08T-KpTBL-A-LuuvMzNw-bGfyr2uvaQr7NbFxvTWlef5xQ"
+  },
+  "id": "0d6e79c4-48e2-4953-945f-c5bfdcbe82aa"
+}
+```
+
+#### Discussion
 At a later point in time, the node can prove they signed the message by signing
 a random challenge value.  Since new `did:key`s are generated for each response,
-this is no less anonymous than the current DIDComm message `id` approach.
+there is no privacy loss.
 
 It is important to note that these signatures do _not_ enable nodes to prove
 they did _not_ give a particular response since the `did:key` objects are not
@@ -341,6 +431,24 @@ nodes in the supply chain include the signatures and keys in the
 `partialResponses` field of their own responses.  Being able to identify nodes
 from signatures would potentially be a privacy concern and would have to be
 carefully thought through.
+
+Nodes are incentivised to allow their children to lay claim to responses because
+this allows them to shift blame in the event of faulty information being
+revealed. However, because the keys are not authenticated, child nodes can
+always deny they gave a response.
+
+If a node refuses to admit wrongdoing, an auditor does not know whether the node
+or its parent was dishonest: either the child node was dishonest and will not
+claim responsibility, or the parent was dishonest and changed the child node's
+honest response.  From the auditor's point of view, it has identified
+approximately where in the supply chain the false information was provided. From
+the parent and child nodes' points of view, one of them has caused the auditor
+to blame the other instead of themselves so there are likely to be implications
+for the business relationship (such as the parent ceasing to use the child as a
+supplier).
+
+Note that the `did:key` identifier is in scope of the signature as proof of
+possession.
 
 ### Response caching
 Some query responses may be statements of immutable fact, or may be applicable
